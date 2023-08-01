@@ -14,8 +14,8 @@ const HTTP_PORT = process.env.PORT || 8080;
 let opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = process.env.JWT_SECRET;
-passport.use(
-  new JwtStrategy(opts, function (jwt_payload, done) {
+
+let strategy = new JwtStrategy(opts, function (jwt_payload, next) {
     userService
       .getUserById(jwt_payload._id)
       .then((user) => {
@@ -26,12 +26,21 @@ passport.use(
         }
       })
       .catch((err) => done(err, false));
-  })
-);
+  });
+
+passport.use(strategy)
 
 app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
+
+app.post("/api/register", (req,res)=>{
+    userService.registerUser(req.body).then(msg=>{
+        res.json({message: msg});
+    }).catch(msg=>{
+        res.status(422).json({message: msg});
+    });
+});
 
 app.post("/api/user/login", (req, res) => {
   userService
