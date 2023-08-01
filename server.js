@@ -33,7 +33,7 @@ app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
 
-app.post("/api/register", (req,res)=>{
+app.post("/api/user/register", (req,res)=>{
     userService.registerUser(req.body).then(msg=>{
         res.json({message: msg});
     }).catch(msg=>{
