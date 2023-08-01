@@ -50,7 +50,7 @@ app.post("/api/user/login", (req, res) => {
         userName: user.userName,
       };
 
-      const token = jwt.sign(payload, process.env.JWT_SECRET);
+      const token = jwt.sign(payload, opts.secretOrKey);
 
       res.json({ message: "login successful", token: token });
     })
@@ -123,6 +123,10 @@ app.delete("/api/user/history/:id", passport.authenticate('jwt', { session: fals
     .catch((msg) => {
       res.status(422).json({ error: msg });
     });
+});
+
+app.use((req, res) => {
+    res.status(404).end();
 });
 
 userService
