@@ -11,22 +11,21 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 const HTTP_PORT = process.env.PORT || 8080;
 
-let opts = {};
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = process.env.JWT_SECRET;
+let opts = {
+  jwtFromRequest : ExtractJwt.fromAuthHeaderWithScheme('jwt'),
+  secretOrKey : process.env.JWT_SECRET
+};
 
 let strategy = new JwtStrategy(opts, function (jwt_payload, next) {
-    userService
-      .getUserById(jwt_payload._id)
-      .then((user) => {
-        if (user) {
-          return done(null, user);
-        } else {
-          return done(null, false);
-        }
-      })
-      .catch((err) => done(err, false));
-  });
+    console.log('payload received', jwt_payload);
+    if (jwt_payload) {
+        next(null, { _id: jwt_payload._id, 
+            userName: jwt_payload.userName,}); 
+    } else {
+        next(null, false);
+    }
+});
+
 
 passport.use(strategy)
 
