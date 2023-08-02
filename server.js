@@ -20,7 +20,7 @@ let strategy = new JwtStrategy(opts, function (jwt_payload, next) {
     console.log('payload received', jwt_payload);
     if (jwt_payload) {
         next(null, { _id: jwt_payload._id, 
-            userName: jwt_payload.userName,}); 
+            userName: jwt_payload.userName}); 
     } else {
         next(null, false);
     }
@@ -28,7 +28,6 @@ let strategy = new JwtStrategy(opts, function (jwt_payload, next) {
 
 
 passport.use(strategy)
-
 app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
@@ -49,9 +48,7 @@ app.post("/api/user/login", (req, res) => {
         _id: user._id,
         userName: user.userName,
       };
-
       const token = jwt.sign(payload, opts.secretOrKey);
-
       res.json({ message: "login successful", token: token });
     })
     .catch((msg) => {
